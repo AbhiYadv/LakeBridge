@@ -1,7 +1,69 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { BarChart2, CreditCard, Activity, Archive } from "lucide-react";
 import AnimatedSection from "./AnimatedSection";
 
+// ─── Token colour classes ──────────────────────────────────────────────────
+const CLS = {
+  cm: "text-zinc-400 dark:text-zinc-500",    // comment
+  kw: "text-sky-600 dark:text-sky-400",      // keyword
+  fn: "text-violet-600 dark:text-violet-400",// function
+  st: "text-amber-600 dark:text-amber-300",  // string literal
+  nu: "text-emerald-600 dark:text-emerald-400", // number
+  lk: "text-emerald-600 dark:text-emerald-300", // lake table
+};
+
+// Sorted longest-first so multi-word keywords match before single words
+const KEYWORDS = [
+  "PERCENTILE_CONT","WITHIN GROUP","GROUP BY","ORDER BY","UNION ALL",
+  "LEFT JOIN","SELECT","FROM","JOIN","WHERE","LIMIT","ON","AND","AS",
+  "INTERVAL","BETWEEN","DISTINCT",
+];
+const FUNCTIONS = ["date_trunc","SUM","COUNT"];
+
+// Build one big alternation, longest first
+const TOKEN_RE = new RegExp(
+  "('(?:[^'\\\\]|\\\\.)*')" +            // string literals
+  "|([0-9]+(?:\\.[0-9]+)?)" +             // numbers
+  "|(" + [...KEYWORDS, ...FUNCTIONS]
+    .sort((a, b) => b.length - a.length)
+    .map(k => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("|") + ")" +
+  "|(lake\\.[a-z_]+)",                    // lake.table references
+  "g"
+);
+
+function tokenizeSQL(sql) {
+  const tokens = [];
+  const lines = sql.split("\n");
+
+  lines.forEach((line, li) => {
+    if (li > 0) tokens.push({ text: "\n", cls: null });
+
+    const commentIdx = line.indexOf("--");
+    const code    = commentIdx >= 0 ? line.slice(0, commentIdx) : line;
+    const comment = commentIdx >= 0 ? line.slice(commentIdx)    : "";
+
+    // tokenise code portion
+    let last = 0;
+    let m;
+    const re = new RegExp(TOKEN_RE.source, "g");
+    while ((m = re.exec(code)) !== null) {
+      if (m.index > last) tokens.push({ text: code.slice(last, m.index), cls: null });
+      const [full, str, num, kw, lk] = m;
+      const cls = str ? "st" : num ? "nu" : lk ? "lk" :
+                  FUNCTIONS.includes(kw) ? "fn" : "kw";
+      tokens.push({ text: full, cls });
+      last = m.index + full.length;
+    }
+    if (last < code.length) tokens.push({ text: code.slice(last), cls: null });
+
+    if (comment) tokens.push({ text: comment, cls: "cm" });
+  });
+
+  return tokens;
+}
+
+// ─── Use-case data ─────────────────────────────────────────────────────────
 const useCases = [
   {
     icon: <BarChart2 size={16} />, label: "Product Analytics",
@@ -71,26 +133,74 @@ ORDER BY 1, 2;`,
   },
 ];
 
-const KEYWORDS = ["SELECT","FROM","JOIN","LEFT","WHERE","GROUP BY","ORDER BY","UNION ALL","LIMIT","ON","AND","AS","INTERVAL","BETWEEN","WITHIN GROUP"];
-const FUNCS = ["PERCENTILE_CONT","date_trunc","SUM","COUNT","DISTINCT"];
+// ─── Typewriter SQL panel ──────────────────────────────────────────────────
+const SPEED = 13; // ms per character
 
-function SQLLine({ line }) {
-  const parts = line.split(/(SELECT|FROM|JOIN|LEFT|WHERE|GROUP BY|ORDER BY|UNION ALL|LIMIT|ON|AND|AS|INTERVAL|BETWEEN|WITHIN GROUP|PERCENTILE_CONT|date_trunc|SUM|COUNT|DISTINCT)/g);
+function TypewriterPanel({ uc, tabKey }) {
+  const tokens    = useMemo(() => tokenizeSQL(uc.sql), [uc.sql]);
+  const totalChars = useMemo(() => tokens.reduce((s, t) => s + t.text.length, 0), [tokens]);
+
+  const [charCount, setCharCount] = useState(0);
+
+  // Reset + restart whenever the active tab changes
+  useEffect(() => {
+    setCharCount(0);
+  }, [tabKey]);
+
+  // Advance one char at a time
+  useEffect(() => {
+    if (charCount >= totalChars) return;
+    const id = setTimeout(() => setCharCount((c) => c + 1), SPEED);
+    return () => clearTimeout(id);
+  }, [charCount, totalChars]);
+
+  const done = charCount >= totalChars;
+
+  // Render tokens up to charCount
+  let remaining = charCount;
+  const rendered = tokens.map((token, i) => {
+    if (remaining <= 0) return null;
+    const visible = token.text.slice(0, remaining);
+    remaining = Math.max(0, remaining - token.text.length);
+    return visible ? (
+      <span key={i} className={CLS[token.cls] || "text-zinc-700 dark:text-zinc-300"}>
+        {visible}
+      </span>
+    ) : null;
+  });
+
   return (
-    <div>
-      {parts.map((p, i) => {
-        if (KEYWORDS.includes(p)) return <span key={i} className="text-sky-600 dark:text-sky-400">{p}</span>;
-        if (FUNCS.includes(p)) return <span key={i} className="text-violet-600 dark:text-violet-400">{p}</span>;
-        if (p.includes("--")) return <span key={i} className="text-zinc-400 dark:text-zinc-500">{p}</span>;
-        return <span key={i}>{p}</span>;
-      })}
+    <div className="rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#070707] overflow-hidden">
+      {/* Title bar */}
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-zinc-200 dark:border-white/8 bg-zinc-100 dark:bg-zinc-900/50">
+        <div className="w-2.5 h-2.5 rounded-full bg-zinc-400 dark:bg-zinc-700" />
+        <div className="w-2.5 h-2.5 rounded-full bg-zinc-400 dark:bg-zinc-700" />
+        <div className="w-2.5 h-2.5 rounded-full bg-zinc-400 dark:bg-zinc-700" />
+        <span className="ml-3 text-zinc-400 dark:text-zinc-500 text-xs font-mono">
+          {uc.label.toLowerCase().replace(/\s+/g, "_")}.sql
+        </span>
+      </div>
+
+      {/* Typed SQL */}
+      <pre
+        data-testid="usecase-sql-typewriter"
+        className="p-5 text-sm font-mono overflow-x-auto leading-relaxed whitespace-pre min-h-[220px]"
+      >
+        {rendered}
+        {!done && (
+          <span
+            className="inline-block w-[2px] h-[1.1em] align-text-bottom bg-zinc-400 dark:bg-zinc-400 animate-pulse"
+            aria-hidden="true"
+          />
+        )}
+      </pre>
     </div>
   );
 }
 
+// ─── Section ───────────────────────────────────────────────────────────────
 export default function UseCasesSection() {
   const [active, setActive] = useState(0);
-  const uc = useCases[active];
 
   return (
     <section id="usecases" data-testid="use-cases-section"
@@ -106,6 +216,7 @@ export default function UseCasesSection() {
 
         <AnimatedSection>
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+            {/* Tab list */}
             <div className="lg:col-span-2 flex flex-row lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0">
               {useCases.map((uc, i) => (
                 <button key={i} onClick={() => setActive(i)} data-testid={`usecase-tab-${i}`}
@@ -114,28 +225,25 @@ export default function UseCasesSection() {
                       ? "border-blue-400/40 dark:border-blue-500/40 bg-blue-50 dark:bg-blue-500/10 text-zinc-900 dark:text-white"
                       : "border-zinc-200 dark:border-white/8 bg-zinc-50 dark:bg-zinc-900/30 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900/60 hover:border-zinc-300 dark:hover:border-white/15"
                   }`}>
-                  <span className={active === i ? "text-blue-500 dark:text-blue-400" : "text-zinc-400 dark:text-zinc-500"}>{uc.icon}</span>
+                  <span className={active === i ? "text-blue-500 dark:text-blue-400" : "text-zinc-400 dark:text-zinc-500"}>
+                    {uc.icon}
+                  </span>
                   <span className="font-medium text-sm whitespace-nowrap">{uc.label}</span>
                 </button>
               ))}
             </div>
 
-            <div key={active} className="lg:col-span-3">
+            {/* Panel */}
+            <div className="lg:col-span-3">
               <div className="mb-5">
-                <h3 className="font-heading font-semibold text-zinc-900 dark:text-white text-2xl mb-3">{uc.headline}</h3>
-                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">{uc.description}</p>
+                <h3 className="font-heading font-semibold text-zinc-900 dark:text-white text-2xl mb-3">
+                  {useCases[active].headline}
+                </h3>
+                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  {useCases[active].description}
+                </p>
               </div>
-              <div className="rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-[#070707] overflow-hidden">
-                <div className="flex items-center gap-2 px-4 py-3 border-b border-zinc-200 dark:border-white/8 bg-zinc-100 dark:bg-zinc-900/50">
-                  <div className="w-2.5 h-2.5 rounded-full bg-zinc-400 dark:bg-zinc-700" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-zinc-400 dark:bg-zinc-700" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-zinc-400 dark:bg-zinc-700" />
-                  <span className="ml-3 text-zinc-400 dark:text-zinc-500 text-xs font-mono">{uc.label.toLowerCase().replace(/\s+/g,"_")}.sql</span>
-                </div>
-                <pre className="p-5 text-sm font-mono text-zinc-700 dark:text-zinc-300 overflow-x-auto leading-relaxed whitespace-pre">
-                  {uc.sql.split("\n").map((line, li) => <SQLLine key={li} line={line} />)}
-                </pre>
-              </div>
+              <TypewriterPanel uc={useCases[active]} tabKey={active} />
             </div>
           </div>
         </AnimatedSection>

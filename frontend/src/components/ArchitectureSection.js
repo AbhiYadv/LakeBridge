@@ -78,16 +78,27 @@ export default function ArchitectureSection() {
                   ))}
                 </div>
               </div>
-              <div className="w-full max-w-md mt-3">
-                <div className="grid grid-cols-3 gap-3">
-                  <div /><div />
-                  <div className="flex flex-col items-center gap-1">
-                    <ArrowDown size={12} className="text-zinc-400 dark:text-zinc-600" />
-                    <div className="w-full rounded-lg border border-emerald-400/20 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/5 p-2 text-center">
-                      <div className="text-emerald-600 dark:text-emerald-400 text-xs font-mono font-medium whitespace-nowrap">S3 / R2 / MinIO</div>
-                      <div className="text-zinc-400 dark:text-zinc-600 text-xs mt-0.5 whitespace-nowrap">Parquet · Iceberg</div>
-                    </div>
-                  </div>
+              {/* Converging arrow to storage layer */}
+              <div className="w-full max-w-md mt-2 flex flex-col items-center">
+                <div className="relative w-full flex items-end justify-center" style={{ height: 28 }}>
+                  {/* left arm */}
+                  <div className="absolute left-[calc(1/6*100%)] bottom-0 w-px h-full bg-zinc-300 dark:bg-white/15" />
+                  {/* centre arm */}
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-px h-full bg-zinc-300 dark:bg-white/15" />
+                  {/* right arm */}
+                  <div className="absolute right-[calc(1/6*100%)] bottom-0 w-px h-full bg-zinc-300 dark:bg-white/15" />
+                  {/* horizontal connector at bottom */}
+                  <div className="absolute bottom-0 left-[calc(1/6*100%)] right-[calc(1/6*100%)] h-px bg-zinc-300 dark:bg-white/15" />
+                </div>
+                <div className="flex flex-col items-center">
+                  <ArrowDown size={12} className="text-zinc-400 dark:text-zinc-600 -mt-px" />
+                </div>
+              </div>
+              {/* Storage layer — full width, same size as Query Gateway */}
+              <div className="w-full max-w-md mt-1">
+                <div className="rounded-xl border border-emerald-400/40 dark:border-emerald-500/40 px-5 py-4 text-center bg-emerald-50 dark:bg-emerald-500/10">
+                  <div className="font-heading font-semibold text-sm text-emerald-700 dark:text-emerald-300">S3 / R2 / MinIO</div>
+                  <div className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Parquet · Iceberg</div>
                 </div>
               </div>
             </div>
