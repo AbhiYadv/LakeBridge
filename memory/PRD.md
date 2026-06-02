@@ -51,6 +51,7 @@ LakeBridge is a Postgres-native lakehouse access platform. This is its SaaS mark
 - `/blog` page — 4 posts, filter by type, single-post view
 - `vercel.json` — SPA rewrite rule for `/docs`, `/blog`, and all deep links
 - **Waitlist form made frontend-only** — shows success message with setTimeout, no API dependency
+- **GitHub live star badge** in hero CTA — fetches from GitHub API, sessionStorage cache (5 min TTL), graceful fallback when repo not found
 
 ## Vercel Deployment
 - Root directory: `frontend`

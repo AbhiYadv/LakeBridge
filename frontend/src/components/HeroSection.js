@@ -1,6 +1,43 @@
-import React from "react";
-import { ArrowRight, Github } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ArrowRight, Github, Star } from "lucide-react";
 import { motion } from "framer-motion";
+
+const GITHUB_REPO = "lakebridge/lakebridge";
+const GITHUB_URL  = `https://github.com/${GITHUB_REPO}`;
+const CACHE_KEY   = `gh_stars_${GITHUB_REPO}`;
+const CACHE_TTL   = 5 * 60 * 1000; // 5 minutes
+
+function formatStars(n) {
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+  return String(n);
+}
+
+function useGitHubStars() {
+  const [stars, setStars] = useState(null);
+
+  useEffect(() => {
+    try {
+      const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || "null");
+      if (cached && Date.now() - cached.ts < CACHE_TTL) {
+        setStars(cached.stars);
+        return;
+      }
+    } catch {}
+
+    fetch(`https://api.github.com/repos/${GITHUB_REPO}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((data) => {
+        const s = data.stargazers_count ?? null;
+        setStars(s);
+        if (s !== null) {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify({ stars: s, ts: Date.now() }));
+        }
+      })
+      .catch(() => {}); // silently fail — badge just stays hidden
+  }, []);
+
+  return stars;
+}
 
 function SQLWindow() {
   return (
@@ -108,6 +145,8 @@ function SQLWindow() {
 }
 
 export default function HeroSection() {
+  const stars = useGitHubStars();
+
   return (
     <section id="hero" data-testid="hero-section"
       className="relative hero-grid pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
@@ -146,11 +185,24 @@ export default function HeroSection() {
             className="flex items-center gap-2 px-6 py-3 bg-zinc-900 dark:bg-white text-white dark:text-black text-sm font-semibold rounded-md hover:bg-zinc-700 dark:hover:bg-zinc-100 transition-colors duration-150">
             Get early access <ArrowRight size={16} />
           </a>
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+
+          {/* GitHub star badge */}
+          <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer"
             data-testid="hero-cta-github"
-            className="flex items-center gap-2 px-6 py-3 border border-zinc-300 dark:border-white/20 text-zinc-700 dark:text-white text-sm font-medium rounded-md hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors duration-150">
-            <Github size={16} />
-            View on GitHub
+            className="group flex items-center gap-0 rounded-md border border-zinc-300 dark:border-white/20 overflow-hidden text-sm font-medium transition-colors duration-150 hover:border-zinc-400 dark:hover:border-white/30">
+            {/* Main GitHub button */}
+            <span className="flex items-center gap-2 px-4 py-3 text-zinc-700 dark:text-white bg-transparent group-hover:bg-zinc-100 dark:group-hover:bg-white/5 transition-colors duration-150">
+              <Github size={16} />
+              View on GitHub
+            </span>
+            {/* Star count pill — only shown when data is available */}
+            {stars !== null && (
+              <span data-testid="github-star-count"
+                className="flex items-center gap-1.5 px-3 py-3 border-l border-zinc-300 dark:border-white/20 text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-white/5 group-hover:bg-zinc-100 dark:group-hover:bg-white/8 transition-colors duration-150 tabular-nums">
+                <Star size={13} className="text-amber-500 fill-amber-500" />
+                {formatStars(stars)}
+              </span>
+            )}
           </a>
         </motion.div>
 
