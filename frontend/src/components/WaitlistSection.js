@@ -1,28 +1,26 @@
 import React, { useState } from "react";
 import { ArrowRight, Loader2 } from "lucide-react";
-import axios from "axios";
 import AnimatedSection from "./AnimatedSection";
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
 
 export default function WaitlistSection() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!email.trim()) return;
-    setStatus("loading");
-    try {
-      const res = await axios.post(`${API}/waitlist`, { email: email.trim() });
-      setStatus(res.data.status === "existing" ? "existing" : "success");
-      setMessage(res.data.message);
-    } catch {
+    const trimmed = email.trim();
+    if (!trimmed) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
       setStatus("error");
-      setMessage("Something went wrong. Please try again.");
+      setMessage("Please enter a valid email address.");
+      return;
     }
+    setStatus("loading");
+    setTimeout(() => {
+      setStatus("success");
+      setMessage("You're on the list! We'll reach out when your spot is ready.");
+    }, 600);
   };
 
   return (

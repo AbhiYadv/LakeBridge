@@ -1,143 +1,104 @@
 # LakeBridge
 
-One Postgres endpoint. Two worlds of data.
+> Postgres-native lakehouse access platform — marketing & demo website.
 
-LakeBridge is a Postgres-native lakehouse access platform that lets your team query Postgres tables and S3/R2 lake data from a single SQL endpoint — without moving data, duplicating pipelines, or blocking production.
-
----
-
-## Overview
-
-- **Single SQL endpoint** — standard Postgres wire protocol, no new tools
-- **Isolated workers** — lake scans run outside your production database
-- **Parquet + Iceberg** — S3, R2, MinIO support out of the box
-- **Query limits & cost controls** — bytes scanned, timeout, per-user concurrency
-- **Audit logs** — every query logged with full metadata
-- **Multi-layer cache** — result cache, metadata cache, hot partition cache
-- **Dark/Light theme** — full theme toggle support
-- **Docs & Blog** — built-in `/docs` and `/blog` pages
+Query Postgres tables and S3/R2 lake data from a single SQL endpoint.
+No data movement. No new tools. Works with every Postgres-compatible client.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18, Tailwind CSS, Framer Motion, next-themes |
-| Backend | FastAPI (Python 3.11+), Motor (async MongoDB) |
-| Database | MongoDB |
-| Email | Resend (optional, graceful fallback) |
+| Layer | Tech |
+|-------|------|
+| Frontend | React 19, Tailwind CSS, Framer Motion |
+| Routing | React Router DOM v7 |
+| Theme | next-themes (dark / light toggle) |
+| Icons | lucide-react |
+| Package manager | Yarn |
+
+This is a **static marketing website**. There is no required backend, database, or email service.
 
 ---
 
-## Project Structure
-
-```
-/
-├── frontend/              # React SPA
-│   ├── src/
-│   │   ├── components/    # Navbar, Hero, Features, Architecture, etc.
-│   │   ├── pages/         # DocsPage, BlogPage
-│   │   └── App.js
-│   ├── public/
-│   ├── .env.example
-│   └── package.json
-├── backend/               # FastAPI API
-│   ├── server.py          # Main API + waitlist endpoint
-│   ├── requirements.txt
-│   └── .env.example
-├── .gitignore
-└── README.md
-```
-
----
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+, Python 3.11+, MongoDB, `yarn`
-
-### 1. Clone
+## Local Development
 
 ```bash
-git clone https://github.com/AbhiYadv/LakeBridge.git
-cd LakeBridge
-```
-
-### 2. Backend
-
-```bash
-cd backend
-cp .env.example .env          # fill in MONGO_URL, DB_NAME
-pip install -r requirements.txt
-uvicorn server:app --reload --port 8001
-```
-
-### 3. Frontend
-
-```bash
+# Install dependencies
 cd frontend
-cp .env.example .env          # set REACT_APP_BACKEND_URL=http://localhost:8001
 yarn install
+
+# Start dev server (http://localhost:3000)
 yarn start
 ```
 
-App → `http://localhost:3000` | API → `http://localhost:8001/api`
-
 ---
 
-## Environment Variables
+## Deploy to Vercel
 
-### Backend (`backend/.env`)
+### Option A — Vercel CLI
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `MONGO_URL` | Yes | MongoDB connection string |
-| `DB_NAME` | Yes | MongoDB database name |
-| `CORS_ORIGINS` | No | Allowed origins (default: `*`) |
-| `RESEND_API_KEY` | No | Resend key for waitlist emails |
-| `SENDER_EMAIL` | No | From address for confirmation emails |
-
-### Frontend (`frontend/.env`)
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `REACT_APP_BACKEND_URL` | Yes | Full URL of the backend |
-
----
-
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/` | Health check |
-| POST | `/api/waitlist` | Join the waitlist (email) |
-| GET | `/api/waitlist/count` | Signup count |
-
----
-
-## Pages
-
-| Route | Description |
-|-------|-------------|
-| `/` | Landing page |
-| `/docs` | Extension quickstart + architecture |
-| `/blog` | Blog and changelog |
-
----
-
-## Optional: Email (Resend)
-
-Add to `backend/.env`:
+```bash
+npm i -g vercel        # Install Vercel CLI once
+cd frontend
+vercel                 # Follow the prompts
 ```
-RESEND_API_KEY=re_your_key_here
-SENDER_EMAIL=noreply@yourdomain.com
-```
-Without a key the API works normally — emails are silently skipped.
+
+### Option B — Vercel Dashboard (recommended)
+
+1. Push the repo to GitHub.
+2. Go to [vercel.com/new](https://vercel.com/new) and import the repository.
+3. Set the **Root Directory** to `frontend`.
+4. Framework preset will be detected as **Create React App** automatically.
+5. Leave all environment variables empty — none are required.
+6. Click **Deploy**.
+
+### Vercel Project Settings
+
+| Setting | Value |
+|---------|-------|
+| Root Directory | `frontend` |
+| Framework Preset | Create React App |
+| Build Command | `yarn build` |
+| Output Directory | `build` |
+| Install Command | `yarn install` |
+
+No environment variables are required for the static site.
+
+---
+
+## Routes
+
+| Path | Description |
+|------|-------------|
+| `/` | Landing page (hero, features, pricing, waitlist) |
+| `/docs` | Documentation — quickstart, architecture, extension reference |
+| `/blog` | Blog / changelog |
+
+All routes are handled client-side via React Router. The `vercel.json` rewrite rule ensures deep links work correctly.
+
+---
+
+## Features
+
+- Dark / Light theme toggle (persistent via `next-themes`)
+- Scroll-triggered fade-in animations (Framer Motion)
+- SEO meta tags + Open Graph + Twitter Card in `public/index.html`
+- Fully responsive (mobile menu, adaptive layouts)
+- Waitlist form — frontend-only, shows instant success message
+
+---
+
+## Optional: Re-enabling the Backend
+
+If you want to re-enable the FastAPI backend and MongoDB waitlist storage:
+
+1. Deploy the `backend/` directory to Railway, Fly.io, or any container host.
+2. Set `REACT_APP_BACKEND_URL=https://your-api.example.com` in Vercel environment variables.
+3. Restore the API call in `frontend/src/components/WaitlistSection.js`.
 
 ---
 
 ## License
 
-MIT — Built for Postgres teams.
+MIT
