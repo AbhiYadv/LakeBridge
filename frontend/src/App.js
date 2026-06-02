@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "next-themes";
 import "./index.css";
 import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
@@ -12,10 +13,11 @@ import ComparisonSection from "./components/ComparisonSection";
 import PricingSection from "./components/PricingSection";
 import WaitlistSection from "./components/WaitlistSection";
 import Footer from "./components/Footer";
+import DocsPage from "./pages/DocsPage";
 
 function LandingPage() {
   return (
-    <div className="bg-[#0A0A0A] min-h-screen text-zinc-100 overflow-x-hidden">
+    <div className="bg-white dark:bg-[#0A0A0A] min-h-screen text-zinc-900 dark:text-zinc-100 overflow-x-hidden transition-colors duration-200">
       <Navbar />
       <main>
         <HeroSection />
@@ -35,12 +37,15 @@ function LandingPage() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="*" element={<LandingPage />} />
-      </Routes>
-    </BrowserRouter>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/docs" element={<DocsPage />} />
+          <Route path="*" element={<LandingPage />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
