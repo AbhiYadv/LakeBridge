@@ -1,0 +1,149 @@
+import React from "react";
+import { Check, X, Minus } from "lucide-react";
+
+const features = [
+  "Single Postgres endpoint",
+  "No data migration needed",
+  "Protects production DB",
+  "Open-source component",
+  "Parquet & Iceberg support",
+  "Query cost controls",
+  "Setup in minutes",
+  "Postgres-native auth",
+];
+
+const tools = [
+  { name: "LakeBridge", highlight: true },
+  { name: "Snowflake" },
+  { name: "AWS Athena" },
+  { name: "Databricks" },
+  { name: "Trino" },
+  { name: "Postgres FDW" },
+];
+
+// true = yes, false = no, null = partial
+const matrix = [
+  [true, false, false, false, false, true],
+  [true, false, true, false, true, true],
+  [true, true, true, true, true, false],
+  [true, false, false, false, true, true],
+  [true, true, true, true, true, false],
+  [true, true, true, true, false, false],
+  [true, false, false, false, false, null],
+  [true, false, false, false, false, true],
+];
+
+function Cell({ val, highlight }) {
+  if (val === true)
+    return (
+      <span
+        className={`inline-flex items-center justify-center w-6 h-6 rounded-full ${
+          highlight ? "bg-emerald-500/20" : "bg-zinc-800"
+        }`}
+      >
+        <Check
+          size={13}
+          className={highlight ? "text-emerald-400" : "text-zinc-400"}
+        />
+      </span>
+    );
+  if (val === false)
+    return (
+      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-zinc-900">
+        <X size={13} className="text-zinc-700" />
+      </span>
+    );
+  return (
+    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-zinc-900">
+      <Minus size={13} className="text-zinc-600" />
+    </span>
+  );
+}
+
+export default function ComparisonSection() {
+  return (
+    <section
+      id="comparison"
+      data-testid="comparison-section"
+      className="py-28 px-4 sm:px-6 lg:px-8 border-t border-white/5"
+    >
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="max-w-2xl mb-16">
+          <p className="text-xs text-zinc-500 uppercase tracking-widest font-medium mb-4">
+            Market positioning
+          </p>
+          <h2 className="font-heading font-bold text-4xl md:text-5xl text-white tracking-tight leading-tight">
+            Not a Snowflake replacement.
+            <br />
+            <span className="text-zinc-500">Something better for your stack.</span>
+          </h2>
+          <p className="mt-5 text-zinc-400 text-lg leading-relaxed">
+            LakeBridge is purpose-built for Postgres-first teams who don't need
+            a full lakehouse platform — just the ability to query their lake
+            data where their team already works.
+          </p>
+        </div>
+
+        {/* Comparison table */}
+        <div
+          data-testid="comparison-table"
+          className="overflow-x-auto rounded-xl border border-white/10"
+        >
+          <table className="w-full min-w-[640px]">
+            <thead>
+              <tr className="border-b border-white/10">
+                <th className="text-left px-5 py-4 text-zinc-500 font-medium text-sm w-48">
+                  Feature
+                </th>
+                {tools.map((tool) => (
+                  <th
+                    key={tool.name}
+                    className={`px-4 py-4 text-sm font-heading font-semibold text-center ${
+                      tool.highlight
+                        ? "text-white bg-blue-500/8"
+                        : "text-zinc-500"
+                    }`}
+                  >
+                    {tool.highlight && (
+                      <span className="block text-xs text-blue-400 font-mono font-normal mb-0.5">
+                        ← this
+                      </span>
+                    )}
+                    {tool.name}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {features.map((feat, fi) => (
+                <tr
+                  key={fi}
+                  className="border-b border-white/5 last:border-b-0 hover:bg-white/[0.02] transition-colors"
+                >
+                  <td className="px-5 py-3.5 text-sm text-zinc-300 font-medium">
+                    {feat}
+                  </td>
+                  {tools.map((tool, ti) => (
+                    <td
+                      key={ti}
+                      className={`px-4 py-3.5 text-center ${
+                        tool.highlight ? "bg-blue-500/5" : ""
+                      }`}
+                    >
+                      <Cell val={matrix[fi][ti]} highlight={tool.highlight} />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <p className="mt-4 text-xs text-zinc-600 text-right">
+          Partial support marked with —. Comparison is approximate; actual capabilities vary by configuration.
+        </p>
+      </div>
+    </section>
+  );
+}
