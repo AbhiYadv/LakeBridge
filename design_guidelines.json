@@ -1,0 +1,77 @@
+{
+  "project_name": "LakeBridge",
+  "theme": "dark",
+  "archetype": "Archetype 4 (Swiss & High-Contrast)",
+  "global_rules": {
+    "spacing": "Generous spacing between sections (py-24, py-32). Optical alignment for icons and text. Use the generous Tailwind spacing scale.",
+    "borders_and_shadows": "Rely on 1px solid borders (border-white/10) to define sections. Avoid heavy shadows; use deep ambient shadows for floating overlays only.",
+    "animations": "Subtle framer-motion reveals (fade up, stagger). No bouncy physics. Linear tracing beams or glow effects for active states/CTAs.",
+    "accessibility": "Strict adherence to 4.5:1 contrast for text. All interactive elements MUST have role-based data-testid attributes (e.g., data-testid='hero-cta-button')."
+  },
+  "typography": {
+    "headings": {
+      "family": "Cabinet Grotesk, sans-serif",
+      "weight": "font-bold to font-black",
+      "tracking": "tracking-tighter",
+      "scale": "text-4xl md:text-5xl lg:text-6xl for Hero; text-2xl to text-4xl for sections",
+      "color": "text-zinc-50"
+    },
+    "body": {
+      "family": "IBM Plex Sans, sans-serif",
+      "weight": "font-normal",
+      "scale": "text-base md:text-lg",
+      "color": "text-zinc-400"
+    },
+    "code": {
+      "family": "JetBrains Mono, monospace",
+      "scale": "text-sm",
+      "color": "text-zinc-300"
+    }
+  },
+  "color_palette": {
+    "background": "#0A0A0A",
+    "surface": "#121212",
+    "surface_hover": "#1A1A1A",
+    "border": "rgba(255, 255, 255, 0.1)",
+    "primary_accent": "#FFFFFF",
+    "primary_accent_foreground": "#000000",
+    "secondary_accent": "#3B82F6",
+    "text_primary": "#F4F4F5",
+    "text_secondary": "#A1A1AA",
+    "success": "#10B981"
+  },
+  "layout_strategies": {
+    "hero": "Technical, direct, asymmetrical or tightly centered. Massive H1 with tight tracking. A glowing or glassmorphism code block window must act as the primary hero visual, displaying a SQL query joining Postgres and S3.",
+    "features": "MODE A: THE 'TETRIS' GRID (Bento box). Use 1px border-white/10, bg-zinc-900/40. Hover introduces bg-zinc-900/80 and a subtle border color shift.",
+    "architecture": "Grid layout exposing the skeleton ('Technical Look'). Use pure HTML/Tailwind with dashed borders (border-dashed) or SVG lines to represent data flow from isolated workers to S3.",
+    "comparison_table": "Brutalist/minimalist table. No vertical dividers, 1px horizontal dividers. The 'LakeBridge' column should have a subtle bg-white/5 highlight and bright white checkmarks.",
+    "navigation": "Crystal Glass Variant: backdrop-blur-xl bg-black/60, sticky top, z-50, 1px bottom border (border-white/10). Explicit hover states on links (hover:text-white)."
+  },
+  "components": {
+    "buttons": "Square or subtle rounding (rounded-md). Primary CTA: bg-white text-black hover:bg-zinc-200. Secondary: bg-transparent border border-white/20 text-white hover:bg-white/10.",
+    "code_blocks": "Background darker than the page (#050505 or bg-black). Include Mac-style window controls in grayscale. Syntax highlighting should use muted tech tones (pale blue, pale green, white).",
+    "cards": "Flat background, 1px subtle border, no shadow by default. On hover: slight lift (-translate-y-1), border color lightens to white/30."
+  },
+  "icons_and_assets": {
+    "icon_library": "lucide-react",
+    "style": "Technical, minimalist, line icons.",
+    "image_urls": [
+      {
+        "category": "background_texture",
+        "url": "https://images.unsplash.com/photo-1660914256311-918659fae88f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzF8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMGRhcmslMjBnZW9tZXRyaWMlMjB0ZXh0dXJlfGVufDB8fHxibGFja3wxNzgwMzg5MzQ4fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Abstract dark geometric maze texture. Use with 5-10% opacity as a fixed background layer to reduce digital flatness and give a premium feel."
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "You are working with .js files (not .tsx). Do not use TypeScript syntax in the components.",
+    "Install required font families (Cabinet Grotesk, IBM Plex Sans, JetBrains Mono) via Google Fonts or standard CSS imports in index.css.",
+    "Install and use 'lucide-react' for all icons.",
+    "Do not use generic placeholder images for logos (e.g., Databricks, Snowflake); use text-based logos with strong typography or inline SVGs.",
+    "Construct the architecture diagram purely out of HTML/Tailwind borders, flex/grid layouts, and simple SVG arrows/lines. No heavy image assets.",
+    "Forms (like Waitlist) should use heavily customized Shadcn UI elements to match the dark brutalist theme (flat, 1px borders, rounded-md max).",
+    "Implement the hero code block using a standard <div> structure styled to look like an IDE window. Show a mock SQL query utilizing LakeBridge features (e.g., SELECT * FROM postgres_db JOIN s3_lake).",
+    "Apply data-testid to all interactive elements for robust testing.",
+    "No cheesy marketing graphics or gradients. Rely entirely on typography, spacing, 1px borders, and code blocks to build CTO-level credibility."
+  ]
+}
