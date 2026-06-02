@@ -57,7 +57,7 @@ export default function WaitlistSection() {
             ) : (
               <form onSubmit={handleSubmit} data-testid="waitlist-form"
                 className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                <input type="text" value={email} onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@company.com" required data-testid="waitlist-email-input"
                   className="flex-1 px-4 py-3 rounded-md bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-white/15 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-colors" />
                 <button type="submit" disabled={status === "loading"} data-testid="waitlist-submit-button"
