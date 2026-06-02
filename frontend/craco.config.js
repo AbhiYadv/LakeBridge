@@ -38,6 +38,15 @@ let webpackConfig = {
     },
     configure: (webpackConfig) => {
 
+      // Remove ForkTsCheckerWebpackPlugin in production — it uses schema-utils@2/ajv@6
+      // which conflicts with the ajv@8 override needed by terser-webpack-plugin/schema-utils@4.
+      // This plugin only does TypeScript type checking and is not needed for a JS project build.
+      if (process.env.NODE_ENV === 'production') {
+        webpackConfig.plugins = webpackConfig.plugins.filter(
+          (p) => p.constructor && p.constructor.name !== 'ForkTsCheckerWebpackPlugin'
+        );
+      }
+
       // Add ignored patterns to reduce watched directories
         webpackConfig.watchOptions = {
           ...webpackConfig.watchOptions,
