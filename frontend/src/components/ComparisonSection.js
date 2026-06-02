@@ -87,7 +87,7 @@ export default function ComparisonSection() {
             </table>
           </div>
           <p className="mt-4 text-xs text-zinc-400 dark:text-zinc-600 text-right">
-            Partial support marked with —. Comparison is approximate; actual capabilities vary by configuration.
+            Partial support marked with ~. Comparison is approximate; actual capabilities vary by configuration.
           </p>
         </AnimatedSection>
       </div>

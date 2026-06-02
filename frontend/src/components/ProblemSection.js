@@ -54,7 +54,7 @@ export default function ProblemSection() {
           <blockquote className="max-w-2xl text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed italic">
             "We had 3 engineers maintaining a Glue + Athena pipeline just to power our billing dashboard. It broke every time we changed a schema."
           </blockquote>
-          <p className="mt-3 text-sm text-zinc-400 dark:text-zinc-600">— Engineering lead, B2B SaaS (120 employees)</p>
+          <p className="mt-3 text-sm text-zinc-400 dark:text-zinc-600">Engineering lead, B2B SaaS (120 employees)</p>
         </AnimatedSection>
       </div>
     </section>
