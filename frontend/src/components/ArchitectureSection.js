@@ -4,10 +4,10 @@ import AnimatedSection, { AnimatedStagger, staggerItem } from "./AnimatedSection
 import { motion } from "framer-motion";
 
 const steps = [
-  { num: "01", title: "Connect via standard Postgres", desc: "Your app, BI tool, psql, or dbt connects as it would to any Postgres database — no driver changes, no protocol changes." },
+  { num: "01", title: "Connect via standard Postgres", desc: "Your app, BI tool, psql, or dbt connects as it would to any Postgres database. No driver changes, no protocol changes." },
   { num: "02", title: "LakeBridge extension intercepts lake queries", desc: "The open-source Postgres extension detects queries targeting external lake tables and routes them to the LakeBridge query gateway." },
   { num: "03", title: "Gateway validates, estimates, routes", desc: "The gateway checks your policy rules, estimates bytes to scan, and decides: serve from cache, run in Postgres, or dispatch to an isolated worker." },
-  { num: "04", title: "Isolated worker scans lake data", desc: "A DuckDB/DataFusion-powered worker scans only the needed Parquet or Iceberg files from S3/R2/MinIO — without touching your Postgres production database." },
+  { num: "04", title: "Isolated worker scans lake data", desc: "A dedicated query worker scans only the needed Parquet or Iceberg files from S3/R2/MinIO, without touching your Postgres production database." },
 ];
 
 export default function ArchitectureSection() {
@@ -78,12 +78,15 @@ export default function ArchitectureSection() {
                   ))}
                 </div>
               </div>
-              <div className="w-full max-w-md mt-3" style={{ paddingLeft: "calc(66.66% + 4px)" }}>
-                <div className="flex flex-col items-center gap-1" style={{ width: "calc(33.33% - 4px)" }}>
-                  <ArrowDown size={12} className="text-zinc-400 dark:text-zinc-600" />
-                  <div className="w-full rounded-lg border border-emerald-400/20 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/5 p-3 text-center">
-                    <div className="text-emerald-600 dark:text-emerald-400 text-xs font-mono font-medium">S3 / R2 / MinIO</div>
-                    <div className="text-zinc-400 dark:text-zinc-600 text-xs mt-0.5">Parquet · Iceberg</div>
+              <div className="w-full max-w-md mt-3">
+                <div className="grid grid-cols-3 gap-3">
+                  <div /><div />
+                  <div className="flex flex-col items-center gap-1">
+                    <ArrowDown size={12} className="text-zinc-400 dark:text-zinc-600" />
+                    <div className="w-full rounded-lg border border-emerald-400/20 dark:border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/5 p-2 text-center">
+                      <div className="text-emerald-600 dark:text-emerald-400 text-xs font-mono font-medium whitespace-nowrap">S3 / R2 / MinIO</div>
+                      <div className="text-zinc-400 dark:text-zinc-600 text-xs mt-0.5 whitespace-nowrap">Parquet · Iceberg</div>
+                    </div>
                   </div>
                 </div>
               </div>

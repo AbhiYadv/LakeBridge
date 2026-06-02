@@ -14,6 +14,7 @@ import PricingSection from "./components/PricingSection";
 import WaitlistSection from "./components/WaitlistSection";
 import Footer from "./components/Footer";
 import DocsPage from "./pages/DocsPage";
+import BlogPage from "./pages/BlogPage";
 
 function LandingPage() {
   return (
@@ -42,6 +43,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/docs" element={<DocsPage />} />
+          <Route path="/blog" element={<BlogPage />} />
           <Route path="*" element={<LandingPage />} />
         </Routes>
       </BrowserRouter>

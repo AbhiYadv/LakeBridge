@@ -135,7 +135,7 @@ export default function HeroSection() {
           transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           className="max-w-2xl mx-auto text-lg text-zinc-600 dark:text-zinc-400 mb-10 leading-relaxed">
           LakeBridge lets your team query Postgres tables and S3/R2 lake data
-          from a single SQL endpoint — without moving data, duplicating pipelines,
+          from a single SQL endpoint, without moving data, duplicating pipelines,
           or blocking production.
         </motion.p>
 

@@ -43,6 +43,7 @@ function InlineCode({ children }) {
 
 const sections = [
   { id: "overview", label: "Overview" },
+  { id: "architecture", label: "Architecture" },
   { id: "quickstart", label: "Quickstart" },
   { id: "configure-storage", label: "Configure Storage" },
   { id: "register-table", label: "Register a Table" },
@@ -113,13 +114,13 @@ export default function DocsPage() {
             <section id="overview" className="mb-14">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-blue-400/30 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-500/10 text-xs text-blue-600 dark:text-blue-400 mb-6">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block" />
-                v0.1 — Private Beta
+                v0.1 · Private Beta
               </div>
               <h1 className="font-heading font-black text-4xl md:text-5xl text-zinc-900 dark:text-white tracking-tight leading-tight mb-5">
                 LakeBridge Docs
               </h1>
               <p className="text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed">
-                LakeBridge is a Postgres-native lakehouse access platform. Install the open-source Postgres extension to query Parquet and Iceberg files in S3, R2, or MinIO — from the same SQL endpoint your app already uses.
+                LakeBridge is a Postgres-native lakehouse access platform. Install the open-source Postgres extension to query Parquet and Iceberg files in S3, R2, or MinIO, using the same SQL endpoint your app already uses.
               </p>
 
               <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -133,6 +134,117 @@ export default function DocsPage() {
                     <p className="text-zinc-500 text-xs">{c.desc}</p>
                   </div>
                 ))}
+              </div>
+            </section>
+
+            <hr className="border-zinc-200 dark:border-white/5 mb-14" />
+
+            {/* Architecture */}
+            <section id="architecture" className="mb-14">
+              <h2 className="font-heading font-bold text-2xl text-zinc-900 dark:text-white mb-2">Architecture</h2>
+              <p className="text-zinc-600 dark:text-zinc-400 mb-8">
+                LakeBridge adds a transparent routing layer between your SQL clients and your data stores. There are no new endpoints to configure, no new query language to learn, and no change to your existing Postgres connection strings.
+              </p>
+
+              {/* System layers */}
+              <div className="mb-10">
+                <h3 className="font-heading font-semibold text-zinc-900 dark:text-white text-lg mb-5">System layers</h3>
+                <div className="space-y-3">
+                  {[
+                    { layer: "Layer 1", name: "Client Layer", color: "border-zinc-300 dark:border-white/15 bg-zinc-50 dark:bg-zinc-900/30", nameColor: "text-zinc-900 dark:text-white", desc: "Your application code, BI tools (Metabase, Superset, Redash), psql CLI, dbt models, and any Postgres-compatible library. Zero changes required. LakeBridge speaks standard Postgres wire protocol.", sub: "App · BI Tool · psql · dbt" },
+                    { layer: "Layer 2", name: "Extension Layer", color: "border-blue-300/50 dark:border-blue-500/30 bg-blue-50/50 dark:bg-blue-500/8", nameColor: "text-blue-700 dark:text-blue-300", desc: "The open-source Postgres extension installs directly into your database. It intercepts SQL statements referencing registered lake schemas and forwards them to the Query Gateway. Postgres-only queries pass through without any overhead.", sub: "Postgres + LakeBridge Extension (open source)" },
+                    { layer: "Layer 3", name: "Query Gateway", color: "border-violet-300/50 dark:border-violet-500/30 bg-violet-50/50 dark:bg-violet-500/8", nameColor: "text-violet-700 dark:text-violet-300", desc: "The gateway is the decision engine. For every lake-touching query it: validates policy rules, estimates scan cost, checks the cache, determines the execution path, and records an audit log entry. It returns the final result set to the Postgres client.", sub: "Policy validation · Cost estimation · Routing · Audit logging" },
+                    { layer: "Layer 4", name: "Execution Layer", color: "border-emerald-300/50 dark:border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-500/8", nameColor: "text-emerald-700 dark:text-emerald-400", desc: "Queries are dispatched to one of three execution paths based on the gateway's routing decision. All three paths are completely invisible to the SQL client. The response format is identical regardless of which path was used.", sub: "Cache path · Native Postgres path · Isolated worker path" },
+                    { layer: "Layer 5", name: "Storage Layer", color: "border-amber-300/50 dark:border-amber-500/30 bg-amber-50/50 dark:bg-amber-500/8", nameColor: "text-amber-700 dark:text-amber-500", desc: "Your Postgres database and object storage. Data never moves or gets copied. Isolated workers scan object storage files directly in-place using columnar projection and partition pruning to minimize I/O.", sub: "Postgres · S3 / R2 / MinIO (Parquet, Iceberg)" },
+                  ].map((l) => (
+                    <div key={l.layer} className={`flex gap-4 p-4 rounded-xl border ${l.color} transition-all duration-200`}>
+                      <div className="flex-shrink-0 text-right w-16">
+                        <span className="text-xs font-mono text-zinc-400 dark:text-zinc-600">{l.layer}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className={`font-heading font-semibold text-sm mb-0.5 ${l.nameColor}`}>{l.name}</div>
+                        <div className="text-zinc-400 dark:text-zinc-600 text-xs font-mono mb-2">{l.sub}</div>
+                        <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">{l.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Query lifecycle */}
+              <div className="mb-10">
+                <h3 className="font-heading font-semibold text-zinc-900 dark:text-white text-lg mb-5">Query lifecycle</h3>
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-5">A complete walkthrough of what happens from the moment your client sends a SQL statement to when it receives results.</p>
+
+                <div className="relative">
+                  <div className="absolute left-[19px] top-4 bottom-4 w-px bg-zinc-200 dark:bg-white/10" />
+                  <div className="space-y-0">
+                    {[
+                      { step: 1, title: "SQL sent via Postgres wire protocol", detail: "Your client sends a SQL statement over the standard Postgres wire protocol. The connection string, driver, and authentication are unchanged from your existing Postgres setup." },
+                      { step: 2, title: "Extension inspects the query", detail: "The LakeBridge extension intercepts the query. If it references only native Postgres tables, it is passed directly to the Postgres executor with zero overhead." },
+                      { step: 3, title: "Gateway receives lake query", detail: "If the query references one or more registered lake schemas (e.g. lake.*), the extension forwards it to the LakeBridge Query Gateway for routing." },
+                      { step: 4, title: "Policy validation", detail: "The gateway checks the caller's role against configured policy rules: allowed tables, max bytes scanned, concurrency limits, and allowed time windows." },
+                      { step: 5, title: "Cache lookup", detail: "The gateway checks the result cache. If an exact match is found for this query, the cached result is returned immediately. No scan occurs." },
+                      { step: 6, title: "Cost estimation and routing", detail: "If no cache hit, the gateway estimates scan cost using partition metadata and statistics. It then routes to the optimal execution path: native Postgres (for hybrid queries with recent data), or an isolated worker (for lake-heavy scans)." },
+                      { step: 7, title: "Execution and result merge", detail: "The worker scans only the required file partitions using columnar projection. For cross-source JOINs, the gateway merges results from the Postgres executor and the worker before returning." },
+                      { step: 8, title: "Cache write and audit log", detail: "The result is optionally written to the result cache with a TTL. An audit log entry is written with: user, query fingerprint, tables touched, bytes scanned, execution path, latency, and cache status." },
+                      { step: 9, title: "Response returned to client", detail: "The final result set is returned to the client over the Postgres wire protocol. The client has no visibility into which execution path was used." },
+                    ].map((s) => (
+                      <div key={s.step} className="flex gap-4 pb-5 relative">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/15 flex items-center justify-center text-xs font-mono text-zinc-500 z-10">
+                          {s.step}
+                        </div>
+                        <div className="flex-1 pt-2 min-w-0">
+                          <h4 className="font-heading font-semibold text-zinc-900 dark:text-white text-sm mb-1">{s.title}</h4>
+                          <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">{s.detail}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Execution paths */}
+              <div className="mb-10">
+                <h3 className="font-heading font-semibold text-zinc-900 dark:text-white text-lg mb-5">Execution paths</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {[
+                    { name: "Cache path", icon: "C", color: "text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/15", desc: "Result matches a cached entry. Returned in microseconds. No scan, no worker.", latency: "Microseconds" },
+                    { name: "Native path", icon: "P", color: "text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-500/15", desc: "Postgres-only query or recent-data query with no lake table references. Executes directly in Postgres.", latency: "Standard Postgres" },
+                    { name: "Worker path", icon: "W", color: "text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-500/15", desc: "Query references lake tables. Dispatched to an isolated worker that scans object storage directly.", latency: "1s to 30s" },
+                  ].map((p) => (
+                    <div key={p.name} className="p-4 rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-900/30">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold mb-3 ${p.color}`}>{p.icon}</div>
+                      <h4 className="font-heading font-semibold text-zinc-900 dark:text-white text-sm mb-1">{p.name}</h4>
+                      <p className="text-zinc-600 dark:text-zinc-400 text-xs leading-relaxed mb-2">{p.desc}</p>
+                      <span className="text-xs font-mono text-zinc-400 dark:text-zinc-600">Typical latency: {p.latency}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Security model */}
+              <div>
+                <h3 className="font-heading font-semibold text-zinc-900 dark:text-white text-lg mb-4">Security model</h3>
+                <div className="space-y-3">
+                  {[
+                    { title: "Credentials are short-lived and query-scoped", desc: "Storage credentials are injected per-query at execution time. They are never stored in your Postgres config or persisted beyond the query lifetime." },
+                    { title: "Workers are ephemeral and tenant-isolated", desc: "Each isolated worker runs in a sandboxed environment. Workers do not share state, file system access, or memory across tenants or queries." },
+                    { title: "Lake data never enters Postgres", desc: "Intermediate results from lake scans are never written to Postgres storage. They are processed in-memory in the worker and streamed directly to the gateway." },
+                    { title: "Policy enforced before execution", desc: "Access controls, byte limits, and concurrency limits are evaluated before a query reaches any execution path. A rejected query returns an error without touching storage." },
+                    { title: "Full audit trail", desc: "Every query is logged with caller identity, query fingerprint, tables accessed, bytes scanned, execution path, and result status. Logs are tamper-evident and retained per your policy configuration." },
+                  ].map((s) => (
+                    <div key={s.title} className="flex gap-3 p-4 rounded-xl border border-zinc-200 dark:border-white/8 bg-zinc-50 dark:bg-zinc-900/20">
+                      <div className="w-1.5 flex-shrink-0 mt-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-1" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-zinc-900 dark:text-white text-sm mb-1">{s.title}</h4>
+                        <p className="text-zinc-600 dark:text-zinc-400 text-xs leading-relaxed">{s.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </section>
 
@@ -153,7 +265,7 @@ export default function DocsPage() {
                 ))}
               </ul>
 
-              <h3 className="font-heading font-semibold text-zinc-900 dark:text-white text-lg mb-2">Step 1 — Install the extension</h3>
+              <h3 className="font-heading font-semibold text-zinc-900 dark:text-white text-lg mb-2">Step 1: Install the extension</h3>
               <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-2">Connect to your Postgres instance and run:</p>
               <CodeBlock title="psql">
 {`-- Install the LakeBridge extension
@@ -170,7 +282,7 @@ SELECT lakebridge.version();
             {/* Configure storage */}
             <section id="configure-storage" className="mb-14">
               <h2 className="font-heading font-bold text-2xl text-zinc-900 dark:text-white mb-3">Configure Storage</h2>
-              <p className="text-zinc-600 dark:text-zinc-400 mb-6">Tell LakeBridge where your lake data lives and how to authenticate. LakeBridge uses short-lived scoped credentials — your S3 keys are never stored in Postgres.</p>
+              <p className="text-zinc-600 dark:text-zinc-400 mb-6">Tell LakeBridge where your lake data lives and how to authenticate. LakeBridge uses short-lived scoped credentials. Your S3 keys are never stored in Postgres.</p>
 
               <h3 className="font-heading font-semibold text-zinc-900 dark:text-white text-lg mb-2">AWS S3 (IAM Role)</h3>
               <CodeBlock title="configure_s3.sql">
@@ -194,7 +306,7 @@ SELECT lakebridge.version();
               </CodeBlock>
 
               <div className="mt-6 p-4 rounded-xl border border-amber-400/20 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/5 text-sm text-amber-700 dark:text-amber-400">
-                <strong>Note:</strong> In production, credentials are injected at query time via the managed credential service — never stored in your Postgres config.
+                <strong>Note:</strong> In production, credentials are injected at query time via the managed credential service. They are never stored in your Postgres config.
               </div>
             </section>
 
@@ -240,7 +352,7 @@ SELECT lakebridge.version();
               <p className="text-zinc-600 dark:text-zinc-400 mb-6">Once your table is registered, query it from any Postgres client like any other table. Join it with Postgres tables seamlessly.</p>
 
               <CodeBlock title="first_query.sql">
-{`-- Pure lake query — routed to isolated worker
+{`-- Pure lake query, routed to isolated worker
 SELECT COUNT(*) FROM lake.events
 WHERE year = 2024 AND month = 11;
 
@@ -344,7 +456,7 @@ SELECT lakebridge.set_global_limits(
               <h2 className="font-heading font-bold text-2xl text-zinc-900 dark:text-white mb-6">FAQ</h2>
               <div className="space-y-6">
                 {[
-                  { q: "Does LakeBridge replace my Postgres database?", a: "No. LakeBridge extends it. Your Postgres instance remains the primary SQL endpoint — LakeBridge adds the ability to join Postgres tables with external lake data." },
+                  { q: "Does LakeBridge replace my Postgres database?", a: "No. LakeBridge extends it. Your Postgres instance remains the primary SQL endpoint. LakeBridge adds the ability to join Postgres tables with external lake data." },
                   { q: "What happens to my Postgres performance?", a: "Lake queries are routed to isolated workers and never execute inside your Postgres process. Your production database is fully protected." },
                   { q: "What file formats are supported?", a: "Parquet and Apache Iceberg (v1 and v2). Delta Lake support is on the roadmap." },
                   { q: "How does caching work?", a: "LakeBridge maintains a multi-layer cache: result cache (exact query results), metadata cache (file listing, schema), and hot partition cache (frequently accessed Parquet row groups)." },

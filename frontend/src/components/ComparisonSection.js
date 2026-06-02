@@ -53,7 +53,7 @@ export default function ComparisonSection() {
             <br /><span className="text-zinc-500">Something better for your stack.</span>
           </h2>
           <p className="mt-5 text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed">
-            LakeBridge is purpose-built for Postgres-first teams who don't need a full lakehouse platform — just the ability to query their lake data where their team already works.
+            LakeBridge is purpose-built for Postgres-first teams who don't need a full lakehouse platform. Just the ability to query their lake data where their team already works.
           </p>
         </AnimatedSection>
 

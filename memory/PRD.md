@@ -46,12 +46,11 @@ LakeBridge is a Postgres-native lakehouse access platform. This is its SaaS mark
 - [x] Features, use cases, comparison, pricing
 - [x] Waitlist email capture
 
-### P1 (Implemented 2025-01)
-- [x] Docs page (/docs) — full quickstart guide with sidebar, code blocks, copy buttons
-- [x] Scroll-triggered fade-in animations (framer-motion useInView + stagger)
-- [x] SEO meta tags (og:title, og:description, og:image, twitter:card, canonical)
-- [x] Dark/light theme toggle (next-themes, Sun/Moon button in Navbar)
-- [x] Resend email integration (graceful fallback when RESEND_API_KEY not set)
+### P1 (Implemented 2025-01, batch 2)
+- [x] Blog/Changelog page at `/blog` — 4 posts, filter by type (announcement/release/feature/engineering), single-post view
+- [x] S3/R2/MinIO layout fixed in architecture diagram
+- [x] All em dashes removed from website wording
+- [x] Docs Architecture section: 5-layer system overview, 9-step query lifecycle, 3 execution paths, security model
 
 ### P1 (Remaining)
 - [ ] Blog/Changelog page

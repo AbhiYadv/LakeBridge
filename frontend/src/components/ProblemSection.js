@@ -17,7 +17,7 @@ const problems = [
   {
     icon: <Layers size={20} className="text-yellow-500 dark:text-yellow-400" />,
     title: "You're maintaining too many systems",
-    description: "AWS Glue + Athena, or Databricks, or Trino — just to answer: 'How many enterprise users churned last quarter?' That's the wrong trade-off.",
+    description: "AWS Glue + Athena, Databricks, or Trino. Just to answer: 'How many enterprise users churned last quarter?' That's the wrong trade-off.",
   },
 ];
 
@@ -33,7 +33,7 @@ export default function ProblemSection() {
             <span className="text-zinc-500">Your queries shouldn't be.</span>
           </h2>
           <p className="mt-5 text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed">
-            Every Postgres-first team hits the same wall. Transactional data in Postgres, historical data in object storage — and no clean way to query both without rebuilding your entire data stack.
+            Every Postgres-first team hits the same wall. Transactional data in Postgres, historical data in object storage, with no clean way to query both without rebuilding your entire data stack.
           </p>
         </AnimatedSection>
 

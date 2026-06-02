@@ -4,7 +4,7 @@ import AnimatedSection, { AnimatedStagger, staggerItem } from "./AnimatedSection
 import { motion } from "framer-motion";
 
 const features = [
-  { icon: <Shield size={18} className="text-blue-500 dark:text-blue-400" />, title: "Isolated Worker Pool", description: "Heavy lake scans run in a dedicated DuckDB/DataFusion pool — completely separate from your Postgres production instance. Your users never feel a slow analytics query.", tag: "Core" },
+  { icon: <Shield size={18} className="text-blue-500 dark:text-blue-400" />, title: "Isolated Worker Pool", description: "Heavy lake scans run in a dedicated pool, completely separate from your Postgres production instance. Your users never feel a slow analytics query.", tag: "Core" },
   { icon: <Zap size={18} className="text-yellow-500 dark:text-yellow-400" />, title: "Multi-layer Cache", description: "Result cache, metadata cache, hot partition cache. Dashboard queries that used to run in 30 seconds return in milliseconds.", tag: "Performance" },
   { icon: <GitBranch size={18} className="text-violet-500 dark:text-violet-400" />, title: "Intelligent Query Routing", description: "The gateway automatically decides: serve from cache, run in Postgres (for recent data), or dispatch to an isolated worker (for lake scans). Transparent to your queries.", tag: "Core" },
   { icon: <BookOpen size={18} className="text-emerald-500 dark:text-emerald-400" />, title: "Audit Logs", description: "Every query logged: user, timestamp, tables touched, bytes scanned, cache hit, latency, and result status. Full traceability for compliance and debugging.", tag: "Observability" },

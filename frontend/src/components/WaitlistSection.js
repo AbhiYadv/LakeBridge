@@ -79,7 +79,7 @@ export default function WaitlistSection() {
             <p className="text-sm text-zinc-500 mb-6">What engineers are saying</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-left">
               {[
-                { quote: "Finally — a way to query our S3 archive from the same Postgres connection our backend uses.", name: "Alex M.", role: "Staff Engineer" },
+                { quote: "Finally, a way to query our S3 archive from the same Postgres connection our backend uses.", name: "Alex M.", role: "Staff Engineer" },
                 { quote: "We were about to spin up Trino. LakeBridge is 10x simpler for what we actually need.", name: "Priya K.", role: "Data Engineer" },
                 { quote: "The isolated worker model is the right abstraction. Our prod DB stopped getting hammered.", name: "Dan R.", role: "CTO, SaaS startup" },
               ].map((t, i) => (

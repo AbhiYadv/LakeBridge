@@ -34,6 +34,7 @@ export default function Navbar() {
     { label: "Features", href: "#features" },
     { label: "Use Cases", href: "#usecases" },
     { label: "Pricing", href: "#pricing" },
+    { label: "Blog", href: "/blog" },
     { label: "Docs", href: "/docs" },
   ];
 

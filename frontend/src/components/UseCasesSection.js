@@ -6,7 +6,7 @@ const useCases = [
   {
     icon: <BarChart2 size={16} />, label: "Product Analytics",
     headline: "Cohort analysis without touching prod",
-    description: "Join your Postgres user records with event logs stored in S3. Run 90-day retention, funnel, and feature usage queries — completely off your production database.",
+    description: "Join your Postgres user records with event logs stored in S3. Run 90-day retention, funnel, and feature usage queries, completely off your production database.",
     sql: `-- 90-day retention cohort
 SELECT
   date_trunc('week', u.created_at) AS cohort,
@@ -23,7 +23,7 @@ ORDER BY 1 DESC;`,
   {
     icon: <CreditCard size={16} />, label: "Usage-Based Billing",
     headline: "Reconcile billing events at any scale",
-    description: "Aggregate usage events from lake storage, join with Postgres subscription records, and generate invoices — without ETL pipelines or data warehouses.",
+    description: "Aggregate usage events from lake storage, join with Postgres subscription records, and generate invoices. No ETL pipelines or data warehouses required.",
     sql: `-- Monthly usage aggregation
 SELECT
   s.customer_id,
@@ -40,7 +40,7 @@ GROUP BY 1, 2;`,
   {
     icon: <Activity size={16} />, label: "Log & Trace Analysis",
     headline: "Query your observability data via SQL",
-    description: "Store structured logs and traces in S3 as Parquet. Query them from your existing Postgres connection — no new tools, no new query language.",
+    description: "Store structured logs and traces in S3 as Parquet. Query them from your existing Postgres connection. No new tools, no new query language.",
     sql: `-- Find slow API endpoints this week
 SELECT
   request_path,
