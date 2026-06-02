@@ -5,6 +5,154 @@ import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 
+// ─── Animated helpers ────────────────────────────────────────────────────────
+const ease = [0.22, 1, 0.36, 1];
+
+function FadeUp({ children, delay = 0, className = "" }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-60px 0px" });
+  return (
+    <motion.div ref={ref} className={className}
+      initial={{ opacity: 0, y: 20 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.55, delay, ease }}>
+      {children}
+    </motion.div>
+  );
+}
+
+function StaggerList({ children, className = "" }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-40px 0px" });
+  return (
+    <motion.div ref={ref} className={className}
+      initial="hidden"
+      animate={inView ? "visible" : "hidden"}
+      variants={{ visible: { transition: { staggerChildren: 0.09 } } }}>
+      {children}
+    </motion.div>
+  );
+}
+
+const slideItem = {
+  hidden: { opacity: 0, x: -16 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+};
+
+const fadeItem = {
+  hidden: { opacity: 0, y: 18 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+};
+
+// ─── Layer data ──────────────────────────────────────────────────────────────
+const LAYERS = [
+  {
+    layer: "Layer 1", name: "Client Layer",
+    accent: "border-l-zinc-400 dark:border-l-zinc-500",
+    badge: "text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800",
+    nameColor: "text-zinc-900 dark:text-white",
+    sub: "App · BI Tool · psql · dbt",
+    desc: "Your application code, BI tools (Metabase, Superset, Redash), psql CLI, dbt models, and any Postgres-compatible library. Zero changes required. LakeBridge speaks standard Postgres wire protocol.",
+  },
+  {
+    layer: "Layer 2", name: "Extension Layer",
+    accent: "border-l-blue-500",
+    badge: "text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/60",
+    nameColor: "text-blue-700 dark:text-blue-300",
+    sub: "Postgres + LakeBridge Extension (open source)",
+    desc: "The open-source Postgres extension installs directly into your database. It intercepts SQL statements referencing registered lake schemas and forwards them to the Query Gateway. Postgres-only queries pass through without any overhead.",
+  },
+  {
+    layer: "Layer 3", name: "Query Gateway",
+    accent: "border-l-violet-500",
+    badge: "text-violet-700 dark:text-violet-300 bg-violet-100 dark:bg-violet-900/60",
+    nameColor: "text-violet-700 dark:text-violet-300",
+    sub: "Policy validation · Cost estimation · Routing · Audit logging",
+    desc: "The gateway is the decision engine. For every lake-touching query it validates policy rules, estimates scan cost, checks the cache, determines the execution path, and records an audit log entry. It returns the final result set to the Postgres client.",
+  },
+  {
+    layer: "Layer 4", name: "Execution Layer",
+    accent: "border-l-emerald-500",
+    badge: "text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60",
+    nameColor: "text-emerald-700 dark:text-emerald-300",
+    sub: "Cache path · Native Postgres path · Isolated worker path",
+    desc: "Queries are dispatched to one of three execution paths based on the gateway's routing decision. All paths are completely invisible to the SQL client. The response format is identical regardless of which path was used.",
+  },
+  {
+    layer: "Layer 5", name: "Storage Layer",
+    accent: "border-l-amber-500",
+    badge: "text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/60",
+    nameColor: "text-amber-700 dark:text-amber-300",
+    sub: "Postgres · S3 / R2 / MinIO (Parquet, Iceberg)",
+    desc: "Your Postgres database and object storage. Data never moves or gets copied. Isolated workers scan object storage files directly in-place using columnar projection and partition pruning to minimize I/O.",
+  },
+];
+
+// ─── LayersBlock component ───────────────────────────────────────────────────
+function LayersBlock() {
+  return (
+    <FadeUp className="mb-10">
+      <h3 className="font-heading font-semibold text-zinc-900 dark:text-white text-lg mb-5">System layers</h3>
+      <StaggerList className="space-y-3">
+        {LAYERS.map((l) => (
+          <motion.div key={l.layer} variants={fadeItem}
+            className={`flex gap-4 p-5 rounded-xl border-l-4 border border-zinc-200 dark:border-white/10 ${l.accent} bg-white dark:bg-[#141414] hover:-translate-y-0.5 transition-transform duration-200`}>
+            <div className="flex-shrink-0 w-14 pt-0.5">
+              <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-mono font-medium ${l.badge}`}>
+                {l.layer.split(" ")[1]}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className={`font-heading font-semibold text-sm mb-0.5 ${l.nameColor}`}>{l.name}</div>
+              <div className="text-zinc-400 dark:text-zinc-500 text-xs font-mono mb-2 leading-snug">{l.sub}</div>
+              <p className="text-zinc-700 dark:text-zinc-200 text-sm leading-relaxed">{l.desc}</p>
+            </div>
+          </motion.div>
+        ))}
+      </StaggerList>
+    </FadeUp>
+  );
+}
+
+// ─── LifecycleBlock component ────────────────────────────────────────────────
+const LIFECYCLE_STEPS = [
+  { step: 1, title: "SQL sent via Postgres wire protocol", detail: "Your client sends a SQL statement over the standard Postgres wire protocol. The connection string, driver, and authentication are unchanged from your existing Postgres setup." },
+  { step: 2, title: "Extension inspects the query", detail: "The LakeBridge extension intercepts the query. If it references only native Postgres tables, it is passed directly to the Postgres executor with zero overhead." },
+  { step: 3, title: "Gateway receives lake query", detail: "If the query references one or more registered lake schemas (e.g. lake.*), the extension forwards it to the LakeBridge Query Gateway for routing." },
+  { step: 4, title: "Policy validation", detail: "The gateway checks the caller's role against configured policy rules: allowed tables, max bytes scanned, concurrency limits, and allowed time windows." },
+  { step: 5, title: "Cache lookup", detail: "The gateway checks the result cache. If an exact match is found for this query, the cached result is returned immediately. No scan occurs." },
+  { step: 6, title: "Cost estimation and routing", detail: "If no cache hit, the gateway estimates scan cost using partition metadata and statistics. It routes to the optimal execution path: native Postgres for hybrid queries, or an isolated worker for lake-heavy scans." },
+  { step: 7, title: "Execution and result merge", detail: "The worker scans only the required file partitions using columnar projection. For cross-source JOINs, the gateway merges results from the Postgres executor and the worker before returning." },
+  { step: 8, title: "Cache write and audit log", detail: "The result is optionally written to the result cache with a TTL. An audit log entry is written with: user, query fingerprint, tables touched, bytes scanned, execution path, latency, and cache status." },
+  { step: 9, title: "Response returned to client", detail: "The final result set is returned to the client over the Postgres wire protocol. The client has no visibility into which execution path was used." },
+];
+
+function LifecycleBlock() {
+  return (
+    <FadeUp className="mb-10">
+      <h3 className="font-heading font-semibold text-zinc-900 dark:text-white text-lg mb-2">Query lifecycle</h3>
+      <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-6">A complete walkthrough of what happens from the moment your client sends SQL to when it receives results.</p>
+      <div className="relative">
+        <div className="absolute left-[19px] top-4 bottom-4 w-px bg-zinc-200 dark:bg-white/10" />
+        <StaggerList className="space-y-0">
+          {LIFECYCLE_STEPS.map((s) => (
+            <motion.div key={s.step} variants={slideItem} className="flex gap-4 pb-5 relative">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white dark:bg-[#1a1a1a] border border-zinc-200 dark:border-white/15 flex items-center justify-center text-xs font-mono text-zinc-500 dark:text-zinc-400 z-10 shadow-sm">
+                {s.step}
+              </div>
+              <div className="flex-1 pt-2 min-w-0">
+                <h4 className="font-heading font-semibold text-zinc-900 dark:text-white text-sm mb-1">{s.title}</h4>
+                <p className="text-zinc-600 dark:text-zinc-300 text-sm leading-relaxed">{s.detail}</p>
+              </div>
+            </motion.div>
+          ))}
+        </StaggerList>
+      </div>
+    </FadeUp>
+  );
+}
+
+// ─── Utilities ───────────────────────────────────────────────────────────────
 function CopyButton({ text }) {
   const [copied, setCopied] = useState(false);
   const copy = () => {
