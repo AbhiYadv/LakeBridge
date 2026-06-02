@@ -52,6 +52,7 @@ class WaitlistEntry(BaseModel):
 class WaitlistResponse(BaseModel):
     message: str
     status: str
+    email_sent: bool = False
 
 
 # ─── Email helper ─────────────────────────────────────────────────────────
@@ -155,7 +156,8 @@ async def join_waitlist(payload: WaitlistCreate):
 
     return WaitlistResponse(
         message="You're on the list! We'll reach out when your spot is ready.",
-        status="success"
+        status="success",
+        email_sent=email_sent
     )
 
 

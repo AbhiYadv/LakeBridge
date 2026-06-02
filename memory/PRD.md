@@ -46,13 +46,17 @@ LakeBridge is a Postgres-native lakehouse access platform. This is its SaaS mark
 - [x] Features, use cases, comparison, pricing
 - [x] Waitlist email capture
 
-### P1 (Post-beta)
-- [ ] Docs page (/docs)
+### P1 (Implemented 2025-01)
+- [x] Docs page (/docs) — full quickstart guide with sidebar, code blocks, copy buttons
+- [x] Scroll-triggered fade-in animations (framer-motion useInView + stagger)
+- [x] SEO meta tags (og:title, og:description, og:image, twitter:card, canonical)
+- [x] Dark/light theme toggle (next-themes, Sun/Moon button in Navbar)
+- [x] Resend email integration (graceful fallback when RESEND_API_KEY not set)
+
+### P1 (Remaining)
 - [ ] Blog/Changelog page
-- [ ] Email confirmation on waitlist signup (SendGrid/Resend)
 - [ ] Admin dashboard to view waitlist signups
-- [ ] Animations (scroll-triggered fade-ins)
-- [ ] SEO meta tags (og:image, description, etc.)
+- [ ] Connect Resend API key to actually send emails
 
 ### P2 (Nice to have)
 - [ ] Dark/light mode toggle
