@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ChevronRight, Copy, Check as CheckIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "lucide-react";
+import { motion, useInView } from "framer-motion";
 
 function CopyButton({ text }) {
   const [copied, setCopied] = useState(false);
@@ -147,62 +148,10 @@ export default function DocsPage() {
               </p>
 
               {/* System layers */}
-              <div className="mb-10">
-                <h3 className="font-heading font-semibold text-zinc-900 dark:text-white text-lg mb-5">System layers</h3>
-                <div className="space-y-3">
-                  {[
-                    { layer: "Layer 1", name: "Client Layer", color: "border-zinc-300 dark:border-white/15 bg-zinc-50 dark:bg-zinc-900/30", nameColor: "text-zinc-900 dark:text-white", desc: "Your application code, BI tools (Metabase, Superset, Redash), psql CLI, dbt models, and any Postgres-compatible library. Zero changes required. LakeBridge speaks standard Postgres wire protocol.", sub: "App · BI Tool · psql · dbt" },
-                    { layer: "Layer 2", name: "Extension Layer", color: "border-blue-300/50 dark:border-blue-500/30 bg-blue-50/50 dark:bg-blue-500/8", nameColor: "text-blue-700 dark:text-blue-300", desc: "The open-source Postgres extension installs directly into your database. It intercepts SQL statements referencing registered lake schemas and forwards them to the Query Gateway. Postgres-only queries pass through without any overhead.", sub: "Postgres + LakeBridge Extension (open source)" },
-                    { layer: "Layer 3", name: "Query Gateway", color: "border-violet-300/50 dark:border-violet-500/30 bg-violet-50/50 dark:bg-violet-500/8", nameColor: "text-violet-700 dark:text-violet-300", desc: "The gateway is the decision engine. For every lake-touching query it: validates policy rules, estimates scan cost, checks the cache, determines the execution path, and records an audit log entry. It returns the final result set to the Postgres client.", sub: "Policy validation · Cost estimation · Routing · Audit logging" },
-                    { layer: "Layer 4", name: "Execution Layer", color: "border-emerald-300/50 dark:border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-500/8", nameColor: "text-emerald-700 dark:text-emerald-400", desc: "Queries are dispatched to one of three execution paths based on the gateway's routing decision. All three paths are completely invisible to the SQL client. The response format is identical regardless of which path was used.", sub: "Cache path · Native Postgres path · Isolated worker path" },
-                    { layer: "Layer 5", name: "Storage Layer", color: "border-amber-300/50 dark:border-amber-500/30 bg-amber-50/50 dark:bg-amber-500/8", nameColor: "text-amber-700 dark:text-amber-500", desc: "Your Postgres database and object storage. Data never moves or gets copied. Isolated workers scan object storage files directly in-place using columnar projection and partition pruning to minimize I/O.", sub: "Postgres · S3 / R2 / MinIO (Parquet, Iceberg)" },
-                  ].map((l) => (
-                    <div key={l.layer} className={`flex gap-4 p-4 rounded-xl border ${l.color} transition-all duration-200`}>
-                      <div className="flex-shrink-0 text-right w-16">
-                        <span className="text-xs font-mono text-zinc-400 dark:text-zinc-600">{l.layer}</span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className={`font-heading font-semibold text-sm mb-0.5 ${l.nameColor}`}>{l.name}</div>
-                        <div className="text-zinc-400 dark:text-zinc-600 text-xs font-mono mb-2">{l.sub}</div>
-                        <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">{l.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <LayersBlock />
 
               {/* Query lifecycle */}
-              <div className="mb-10">
-                <h3 className="font-heading font-semibold text-zinc-900 dark:text-white text-lg mb-5">Query lifecycle</h3>
-                <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-5">A complete walkthrough of what happens from the moment your client sends a SQL statement to when it receives results.</p>
-
-                <div className="relative">
-                  <div className="absolute left-[19px] top-4 bottom-4 w-px bg-zinc-200 dark:bg-white/10" />
-                  <div className="space-y-0">
-                    {[
-                      { step: 1, title: "SQL sent via Postgres wire protocol", detail: "Your client sends a SQL statement over the standard Postgres wire protocol. The connection string, driver, and authentication are unchanged from your existing Postgres setup." },
-                      { step: 2, title: "Extension inspects the query", detail: "The LakeBridge extension intercepts the query. If it references only native Postgres tables, it is passed directly to the Postgres executor with zero overhead." },
-                      { step: 3, title: "Gateway receives lake query", detail: "If the query references one or more registered lake schemas (e.g. lake.*), the extension forwards it to the LakeBridge Query Gateway for routing." },
-                      { step: 4, title: "Policy validation", detail: "The gateway checks the caller's role against configured policy rules: allowed tables, max bytes scanned, concurrency limits, and allowed time windows." },
-                      { step: 5, title: "Cache lookup", detail: "The gateway checks the result cache. If an exact match is found for this query, the cached result is returned immediately. No scan occurs." },
-                      { step: 6, title: "Cost estimation and routing", detail: "If no cache hit, the gateway estimates scan cost using partition metadata and statistics. It then routes to the optimal execution path: native Postgres (for hybrid queries with recent data), or an isolated worker (for lake-heavy scans)." },
-                      { step: 7, title: "Execution and result merge", detail: "The worker scans only the required file partitions using columnar projection. For cross-source JOINs, the gateway merges results from the Postgres executor and the worker before returning." },
-                      { step: 8, title: "Cache write and audit log", detail: "The result is optionally written to the result cache with a TTL. An audit log entry is written with: user, query fingerprint, tables touched, bytes scanned, execution path, latency, and cache status." },
-                      { step: 9, title: "Response returned to client", detail: "The final result set is returned to the client over the Postgres wire protocol. The client has no visibility into which execution path was used." },
-                    ].map((s) => (
-                      <div key={s.step} className="flex gap-4 pb-5 relative">
-                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/15 flex items-center justify-center text-xs font-mono text-zinc-500 z-10">
-                          {s.step}
-                        </div>
-                        <div className="flex-1 pt-2 min-w-0">
-                          <h4 className="font-heading font-semibold text-zinc-900 dark:text-white text-sm mb-1">{s.title}</h4>
-                          <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">{s.detail}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <LifecycleBlock />
 
               {/* Execution paths */}
               <div className="mb-10">
