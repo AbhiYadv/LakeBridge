@@ -7,17 +7,17 @@ const problems = [
   {
     icon: <Zap size={20} className="text-orange-500 dark:text-orange-400" />,
     title: "Analytics queries are killing your Postgres",
-    description: "Heavy scans on large tables cause lock contention, CPU spikes, and slow response times for your users. You can't run analytics on production.",
+    description: "Every slow BI query, every cohort analysis, every dashboard refresh is competing with your users for the same database. Isolated workers stop that completely.",
   },
   {
     icon: <CloudOff size={20} className="text-red-500 dark:text-red-400" />,
-    title: "Your lake data lives in a silo",
-    description: "Historical data in S3 or R2 is only reachable through Athena, Spark, or custom ETL jobs. Your SQL tools can't see it. Your team can't query it.",
+    title: "Your lake has no cost controls",
+    description: "Athena and Spark run unbounded scans with no per-user limits and no pre-execution cost estimate. One analyst query can burn $200 before anyone notices.",
   },
   {
     icon: <Layers size={20} className="text-yellow-500 dark:text-yellow-400" />,
-    title: "You're maintaining too many systems",
-    description: "AWS Glue + Athena, Databricks, or Trino. Just to answer: 'How many enterprise users churned last quarter?' That's the wrong trade-off.",
+    title: "You have no audit trail across your data",
+    description: "Who queried what, how many bytes they scanned, which table they touched at 3am — you have no answer. Compliance, debugging, and cost attribution all need it.",
   },
 ];
 
@@ -28,12 +28,12 @@ export default function ProblemSection() {
         <AnimatedSection className="max-w-2xl mb-16">
           <p className="text-xs text-zinc-500 uppercase tracking-widest font-medium mb-4">The problem</p>
           <h2 className="font-heading font-bold text-4xl md:text-5xl text-zinc-900 dark:text-white tracking-tight leading-tight">
-            Your data is split.
+            Your team is running analytics on production.
             <br />
-            <span className="text-zinc-500">Your queries shouldn't be.</span>
+            <span className="text-zinc-500">That's the risk you shouldn't be taking.</span>
           </h2>
           <p className="mt-5 text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed">
-            Every Postgres-first team hits the same wall. Transactional data in Postgres, historical data in object storage, with no clean way to query both without rebuilding your entire data stack.
+            Every Postgres-first team hits the same three problems: analytics traffic on their primary, lake queries with no guardrails, and no audit trail when something goes wrong.
           </p>
         </AnimatedSection>
 

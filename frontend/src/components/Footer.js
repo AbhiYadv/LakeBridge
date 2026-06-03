@@ -19,7 +19,7 @@ export default function Footer() {
               <span>LakeBridge</span>
             </a>
             <p className="text-zinc-500 text-sm leading-relaxed mb-5">
-              Governed query access for Postgres-first teams — no warehouse required.
+              Governed query access for Postgres-first teams, no warehouse required.
             </p>
             <div className="flex items-center gap-3">
               <a href="https://github.com" target="_blank" rel="noopener noreferrer" data-testid="footer-github"

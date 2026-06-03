@@ -9,18 +9,20 @@ const features = [
 ];
 const tools = [
   { name: "LakeBridge", highlight: true },
-  { name: "Snowflake" }, { name: "AWS Athena" },
-  { name: "Databricks" }, { name: "Trino" }, { name: "Postgres FDW" },
+  { name: "pg_duckdb / pg_lake" }, { name: "Snowflake" }, { name: "AWS Athena" },
+  { name: "Databricks" }, { name: "Trino" },
 ];
+// rows: Single PG endpoint, No data migration, Protects prod DB, Open-source component,
+//       Parquet & Iceberg, Query cost controls, Setup in minutes, Postgres-native auth
 const matrix = [
-  [true,false,false,false,false,true],
-  [true,false,true,false,true,true],
-  [true,true,true,true,true,false],
-  [true,false,false,false,true,true],
-  [true,true,true,true,true,false],
-  [true,true,true,true,false,false],
-  [true,false,false,false,false,null],
-  [true,false,false,false,false,true],
+  [true,true,false,false,false,false],
+  [true,true,false,true,false,true],
+  [true,false,true,true,true,true],
+  [true,true,false,false,false,true],
+  [true,true,true,true,true,true],
+  [true,false,true,true,true,false],
+  [true,true,false,false,false,false],
+  [true,true,false,false,false,false],
 ];
 
 function Cell({ val, highlight }) {
@@ -49,11 +51,11 @@ export default function ComparisonSection() {
         <AnimatedSection className="max-w-2xl mb-16">
           <p className="text-xs text-zinc-500 uppercase tracking-widest font-medium mb-4">Market positioning</p>
           <h2 className="font-heading font-bold text-4xl md:text-5xl text-zinc-900 dark:text-white tracking-tight leading-tight">
-            Not a Snowflake replacement.
-            <br /><span className="text-zinc-500">Something better for your stack.</span>
+            Not pg_duckdb. Not Snowflake.
+            <br /><span className="text-zinc-500">The governed gateway.</span>
           </h2>
           <p className="mt-5 text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed">
-            LakeBridge is purpose-built for Postgres-first teams who don't need a full lakehouse platform. Just the ability to query their lake data where their team already works.
+            pg_duckdb and pg_lake let you query Parquet from Postgres — free, open source, backed by Snowflake and MotherDuck. LakeBridge is what you add when a whole team needs to do it safely: isolated workers so no query touches your primary, cost estimates before every scan, per-user byte limits, and a full audit trail. Same SQL. Governed.
           </p>
         </AnimatedSection>
 

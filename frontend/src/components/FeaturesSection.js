@@ -4,12 +4,12 @@ import AnimatedSection, { AnimatedStagger, staggerItem } from "./AnimatedSection
 import { motion } from "framer-motion";
 
 const features = [
+  { icon: <BookOpen size={18} className="text-emerald-500 dark:text-emerald-400" />, title: "Audit Logs", description: "Every query logged: user, timestamp, tables touched, bytes scanned, cache hit, latency, and result status. Full traceability for compliance and debugging.", tag: "Observability" },
+  { icon: <DollarSign size={18} className="text-emerald-500 dark:text-emerald-400" />, title: "Cost Controls", description: "Estimate scan cost before execution. Set team-level or query-level budgets. Know what a query will cost before it runs.", tag: "Control" },
+  { icon: <Clock size={18} className="text-orange-500 dark:text-orange-400" />, title: "Query Limits", description: "Set max bytes scanned, execution timeouts, and per-user concurrency limits. Prevent runaway queries from burning your cloud bill.", tag: "Control" },
   { icon: <Shield size={18} className="text-blue-500 dark:text-blue-400" />, title: "Isolated Worker Pool", description: "Heavy lake scans run in a dedicated pool, completely separate from your Postgres production instance. Your users never feel a slow analytics query.", tag: "Core" },
   { icon: <Zap size={18} className="text-yellow-500 dark:text-yellow-400" />, title: "Multi-layer Cache", description: "Result cache, metadata cache, hot partition cache. Dashboard queries that used to run in 30 seconds return in milliseconds.", tag: "Performance" },
   { icon: <GitBranch size={18} className="text-violet-500 dark:text-violet-400" />, title: "Intelligent Query Routing", description: "The gateway automatically decides: serve from cache, run in Postgres (for recent data), or dispatch to an isolated worker (for lake scans). Transparent to your queries.", tag: "Core" },
-  { icon: <BookOpen size={18} className="text-emerald-500 dark:text-emerald-400" />, title: "Audit Logs", description: "Every query logged: user, timestamp, tables touched, bytes scanned, cache hit, latency, and result status. Full traceability for compliance and debugging.", tag: "Observability" },
-  { icon: <Clock size={18} className="text-orange-500 dark:text-orange-400" />, title: "Query Limits", description: "Set max bytes scanned, execution timeouts, and per-user concurrency limits. Prevent runaway queries from burning your cloud bill.", tag: "Control" },
-  { icon: <DollarSign size={18} className="text-emerald-500 dark:text-emerald-400" />, title: "Cost Controls", description: "Estimate scan cost before execution. Set team-level or query-level budgets. Know what a query will cost before it runs.", tag: "Control" },
 ];
 
 export default function FeaturesSection() {

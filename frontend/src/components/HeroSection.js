@@ -186,7 +186,7 @@ export default function HeroSection() {
           transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
           className="font-heading font-black tracking-tight text-zinc-900 dark:text-white mb-6"
           style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 1.05 }}>
-          Query Postgres and your lake —
+          Query Postgres and your lake
           <br />
           <span className="text-zinc-500">without a pipeline or a warehouse</span>
         </motion.h1>
