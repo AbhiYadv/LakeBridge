@@ -10,7 +10,7 @@ LakeBridge is a Postgres-native lakehouse access platform. This is its SaaS mark
 - **Frontend**: React 19, Tailwind CSS, Framer Motion, next-themes
 - **Backend**: FastAPI + MongoDB (kept in repo, optional — not required for the static site)
 - **Deployment**: Vercel (frontend-only, `frontend/` root directory)
-- **Frontend URL**: https://query-bridge-2.preview.emergentagent.com
+- **Frontend URL**: https://lakebridge.dev
 
 ## Core Requirements (Static)
 - Dark, developer-tool SaaS landing page (Cursor.com inspired)

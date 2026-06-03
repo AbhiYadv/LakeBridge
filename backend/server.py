@@ -94,7 +94,7 @@ async def send_waitlist_confirmation(email: str) -> bool:
               </p>
               <div style="margin-top:24px;display:flex;gap:12px;">
                 <a href="https://github.com/lakebridge" style="display:inline-block;padding:10px 20px;background:rgba(255,255,255,0.1);color:white;border-radius:6px;text-decoration:none;font-size:13px;font-weight:500;">View on GitHub</a>
-                <a href="https://query-bridge-2.preview.emergentagent.com/docs" style="display:inline-block;padding:10px 20px;background:white;color:black;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Read the docs</a>
+                <a href="https://lakebridge.dev/docs" style="display:inline-block;padding:10px 20px;background:white;color:black;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Read the docs</a>
               </div>
               <p style="color:#52525b;font-size:12px;margin:32px 0 0;">
                 You signed up with: {email}<br>

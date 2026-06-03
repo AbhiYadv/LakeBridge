@@ -1,8 +1,8 @@
 # Test Credentials
 
 ## Application
-- **URL**: https://query-bridge-2.preview.emergentagent.com
-- **Backend API**: https://query-bridge-2.preview.emergentagent.com/api
+- **URL**: https://lakebridge.dev
+- **Backend API**: https://lakebridge.dev/api
 
 ## Test Waitlist Emails
 - test@example.com (can be used to test waitlist signup)
