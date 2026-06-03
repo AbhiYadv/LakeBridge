@@ -186,18 +186,16 @@ export default function HeroSection() {
           transition={{ duration: 0.6, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
           className="font-heading font-black tracking-tight text-zinc-900 dark:text-white mb-6"
           style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", lineHeight: 1.05 }}>
-          One Postgres endpoint.
+          Query Postgres and your lake —
           <br />
-          <span className="text-zinc-500">Two worlds of data.</span>
+          <span className="text-zinc-500">without a pipeline or a warehouse</span>
         </motion.h1>
 
         <motion.p data-testid="hero-subtitle"
           initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           className="max-w-2xl mx-auto text-lg text-zinc-600 dark:text-zinc-400 mb-10 leading-relaxed">
-          LakeBridge lets your team query Postgres tables and S3/R2 lake data
-          from a single SQL endpoint, without moving data, duplicating pipelines,
-          or blocking production.
+          LakeBridge is the governed access layer that lets your team run analytics on Postgres + S3 data safely. Isolated workers protect your primary. Audit logs and cost controls keep it accountable.
         </motion.p>
 
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
